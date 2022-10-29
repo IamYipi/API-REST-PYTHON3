@@ -1,9 +1,10 @@
-from flask import Flask, jsonify
-
+# python -m flask --app apiRest run --host=0.0.0.0
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 # Initialize Flask
 
 app = Flask(__name__)
-
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 # Jsonify variable
 
 examples = [{'name': "Example 0",
@@ -15,7 +16,7 @@ examples = [{'name': "Example 0",
              'Description': "This is the example 1 for the API restful using flask",
              'price': "pay me with ETH"}]
 
-
+global data
 # For lunch the API in a virtual machine local web server http://127.0.0.1:5000/ or http://localhost:5000/
 
 @app.route('/')
@@ -43,15 +44,17 @@ def get_example(example_id):
 # For run introduce in a second terminal:
 # curl -i -H "Content-Type: Application/json" -X POST http://localhost:5000/examples
 
-@app.route("/examples", methods=['POST'])
+@app.route("/data", methods=['POST'])
 def create():
-    example = {'name': "Example 2",
-               'example_id': "2",
-               'Description': "This is the example 2 for the API restful using flask",
-               'price': "pay me with SOL"}
-    examples.append(example)
-    return jsonify({'Created': example})
+    global data
+    data = request.get_json()
+    print(data)
+    return jsonify({'Created': data})
 
+@app.route("/data",methods=['GET'])
+def get_data():
+    global data
+    return jsonify({'PacienteX': data})
 
 # For run introduce in a second terminal:
 # curl -i -H "Content-Type: Application/json" -X PUT http://localhost:5000/examples/id
@@ -76,4 +79,4 @@ def delete(example_id):
 # For run Main
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0")
